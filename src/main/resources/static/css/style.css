@@ -356,3 +356,12 @@ select.form-control {
     gap: 1rem;
     margin-top: 2rem;
 }
+
+/* Sakrivanje treptuće linije (careta) na običnom tekstu i dugmićima dok se zadržava mogućnost selekcije */
+* {
+    caret-color: transparent;
+}
+
+input, textarea, select, [contenteditable="true"] {
+    caret-color: auto;
+}

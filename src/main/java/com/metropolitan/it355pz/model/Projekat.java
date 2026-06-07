@@ -4,13 +4,11 @@ public class Projekat {
     private Long id;
     private String naziv;
     private String klijent;
-    private String status; // npr. "U radu", "Završeno"
+    private String status; 
 
-    // Prazan konstruktor
     public Projekat() {
     }
 
-    // Konstruktor sa svim poljima
     public Projekat(Long id, String naziv, String klijent, String status) {
         this.id = id;
         this.naziv = naziv;
@@ -18,7 +16,7 @@ public class Projekat {
         this.status = status;
     }
 
-    // Getter i Setter metode
+    
     public Long getId() {
         return id;
     }
