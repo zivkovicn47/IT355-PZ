@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Automatikom - Forma za Zadatak</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{zajedno/navbar :: headerNavbar('zadaci')}"></div>
+
+    <div class="container">
+        <div class="form-card">
+            <h2 th:text="${zadatak.id == null} ? 'Novi Zadatak' : 'Izmena Zadatka'">Novi Zadatak</h2>
+            
+            <form th:action="@{/zadaci/sacuvaj}" th:object="${zadatak}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="form-group">
+                    <label class="form-label" for="opis">Opis Zadatka</label>
+                    <input type="text" id="opis" th:field="*{opis}" class="form-control" placeholder="Unesite opis zadatka" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="projekatId">Projekat</label>
+                    <select id="projekatId" th:field="*{projekatId}" class="form-control" required>
+                        <option value="" disabled selected>Izaberite projekat...</option>
+                        <option th:each="proj : ${projekti}" th:value="${proj.id}" th:text="${proj.naziv}">Naziv projekta</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inzenjerId">Dodeljeni inženjer</label>
+                    <select id="inzenjerId" th:field="*{inzenjerId}" class="form-control" required>
+                        <option value="" disabled selected>Izaberite inženjera...</option>
+                        <option th:each="inz : ${inzenjeri}" th:value="${inz.id}" th:text="${inz.ime + ' ' + inz.prezime}">Ime inženjera</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-checkbox">
+                        <input type="checkbox" th:field="*{zavrsen}" />
+                        <span>Zadatak je završen</span>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/zadaci" class="btn btn-secondary">Otkaži</a>
+                    <button type="submit" class="btn btn-primary">Sačuvaj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

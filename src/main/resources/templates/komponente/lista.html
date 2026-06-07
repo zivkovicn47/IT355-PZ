@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Automatikom - Komponente</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{zajedno/navbar :: headerNavbar('komponente')}"></div>
+
+    <div class="container">
+        <div class="table-header-container">
+            <div>
+                <h1 style="font-size: 2rem; font-weight: 700;">Hardverske Komponente</h1>
+                <p style="color: var(--text-secondary); margin-top: 0.25rem;">Pregled i evidencija industrijske i PLC opreme na stanju.</p>
+            </div>
+            <a href="/komponente/novi" class="btn btn-success">Dodaj novu komponentu</a>
+        </div>
+
+        <div class="table-card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th>Naziv Komponente</th>
+                            <th>Serijski Broj</th>
+                            <th>Proizvođač</th>
+                            <th>Status</th>
+                            <th style="width: 200px; text-align: center;">Akcije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="komponenta : ${komponente}">
+                            <td th:text="${komponenta.id}">1</td>
+                            <td style="font-weight: 600;" th:text="${komponenta.naziv}">Naziv</td>
+                            <td th:text="${komponenta.serijskiBroj}">Serijski broj</td>
+                            <td th:text="${komponenta.proizvodjac}">Proizvođač</td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${komponenta.status == 'Na stanju'} ? 'badge-success' : 'badge-warning'"
+                                      th:text="${komponenta.status}">Na stanju</span>
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="display: inline-flex; gap: 0.5rem;">
+                                    <a th:href="@{/komponente/izmeni/{id}(id=${komponenta.id})}" class="btn btn-warning btn-sm">Izmeni</a>
+                                    <a th:href="@{/komponente/obrisi/{id}(id=${komponenta.id})}" 
+                                       th:onclick="return confirm('Da li ste sigurni da želite da obrišete ovu komponentu?')" 
+                                       class="btn btn-danger btn-sm">Obriši</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(komponente)}">
+                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                                Trenutno nema registrovanih komponenti.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
