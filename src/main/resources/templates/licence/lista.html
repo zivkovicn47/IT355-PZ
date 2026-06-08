@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
                 <h1 style="font-size: 2rem; font-weight: 700;">Softverske Licence</h1>
                 <p style="color: var(--text-secondary); margin-top: 0.25rem;">Pregled inženjerskih i runtime licenci softvera.</p>
             </div>
-            <a href="/licence/novi" class="btn btn-success">Dodaj novu licencu</a>
+            <a href="/licence/novi" class="btn btn-success" sec:authorize="hasRole('ADMIN')">Dodaj novu licencu</a>
         </div>
 
         <div class="table-card">
@@ -28,7 +28,7 @@
                             <th>Ključ Licence</th>
                             <th>Tip Licence</th>
                             <th>Aktivna</th>
-                            <th style="width: 200px; text-align: center;">Akcije</th>
+                            <th style="width: 200px; text-align: center;" sec:authorize="hasRole('ADMIN')">Akcije</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,7 +42,7 @@
                                       th:classappend="${licenca.aktivna} ? 'badge-success' : 'badge-danger'"
                                       th:text="${licenca.aktivna} ? 'Aktivna' : 'Neaktivna'">Aktivna</span>
                             </td>
-                            <td style="text-align: center;">
+                            <td style="text-align: center;" sec:authorize="hasRole('ADMIN')">
                                 <div style="display: inline-flex; gap: 0.5rem;">
                                     <a th:href="@{/licence/izmeni/{id}(id=${licenca.id})}" class="btn btn-warning btn-sm">Izmeni</a>
                                     <a th:href="@{/licence/obrisi/{id}(id=${licenca.id})}" 
@@ -52,7 +52,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(licence)}">
-                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            <td th:colspan="${#authorization.expression('hasRole(''ADMIN'')') ? 6 : 5}" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
                                 Trenutno nema registrovanih licenci.
                             </td>
                         </tr>

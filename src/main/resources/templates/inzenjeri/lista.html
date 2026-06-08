@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
                 <h1 style="font-size: 2rem; font-weight: 700;">Inženjerski Tim</h1>
                 <p style="color: var(--text-secondary); margin-top: 0.25rem;">Pregled svih registrovanih inženjera na projektima.</p>
             </div>
-            <a href="/inzenjeri/novi" class="btn btn-success">Dodaj novog inženjera</a>
+            <a href="/inzenjeri/novi" class="btn btn-success" sec:authorize="hasRole('ADMIN')">Dodaj novog inženjera</a>
         </div>
 
         <div class="table-card">
@@ -28,7 +28,7 @@
                             <th>Prezime</th>
                             <th>Email</th>
                             <th>Uloga</th>
-                            <th style="width: 200px; text-align: center;">Akcije</th>
+                            <th style="width: 200px; text-align: center;" sec:authorize="hasRole('ADMIN')">Akcije</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,7 +40,7 @@
                             <td>
                                 <span class="badge badge-info" th:text="${inzenjer.uloga}">PLC Programer</span>
                             </td>
-                            <td style="text-align: center;">
+                            <td style="text-align: center;" sec:authorize="hasRole('ADMIN')">
                                 <div style="display: inline-flex; gap: 0.5rem;">
                                     <a th:href="@{/inzenjeri/izmeni/{id}(id=${inzenjer.id})}" class="btn btn-warning btn-sm">Izmeni</a>
                                     <a th:href="@{/inzenjeri/obrisi/{id}(id=${inzenjer.id})}" 
@@ -50,7 +50,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(inzenjeri)}">
-                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            <td th:colspan="${#authorization.expression('hasRole(''ADMIN'')') ? 6 : 5}" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
                                 Trenutno nema registrovanih inženjera.
                             </td>
                         </tr>

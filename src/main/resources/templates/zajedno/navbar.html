@@ -1,4 +1,4 @@
-<nav class="navbar" th:fragment="headerNavbar(activeTab)">
+<nav class="navbar" th:fragment="headerNavbar(activeTab)" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <a href="/" class="nav-brand">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
@@ -20,6 +20,16 @@
         <li><a href="/inzenjeri" class="nav-link" th:classappend="${activeTab == 'inzenjeri'} ? 'active'">Inženjeri</a></li>
         <li><a href="/licence" class="nav-link" th:classappend="${activeTab == 'licence'} ? 'active'">Licence</a></li>
         <li><a href="/zadaci" class="nav-link" th:classappend="${activeTab == 'zadaci'} ? 'active'">Zadaci</a></li>
+        
+        <!-- Prikaz ulogovanog korisnika i odjava -->
+        <li sec:authorize="isAuthenticated()" class="nav-user-item">
+            <span style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;">
+                Korisnik: <span sec:authentication="name" style="color: var(--primary-color); font-weight: 600;">Korisnik</span>
+            </span>
+            <form th:action="@{/logout}" method="post" style="margin: 0; padding: 0; display: inline;">
+                <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.75rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Odjavi se</button>
+            </form>
+        </li>
     </ul>
 
     <!-- Menu Toggle JavaScript -->

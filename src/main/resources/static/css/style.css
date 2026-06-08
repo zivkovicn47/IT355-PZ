@@ -366,6 +366,15 @@ input, textarea, select, [contenteditable="true"] {
     caret-color: auto;
 }
 
+.nav-user-item {
+    border-left: 1px solid var(--border-color);
+    padding-left: 1.5rem;
+    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 /* Mobilna navigacija i responzivni stilovi */
 .nav-toggle {
     display: none;
@@ -456,6 +465,18 @@ input, textarea, select, [contenteditable="true"] {
 
     th, td {
         padding: 0.75rem 1rem;
+    }
+
+    .nav-user-item {
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding-left: 0;
+        padding-top: 1.25rem;
+        margin-left: 0;
+        margin-top: 0.5rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
     }
 }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
                 <h1 style="font-size: 2rem; font-weight: 700;">Zadaci Projekata</h1>
                 <p style="color: var(--text-secondary); margin-top: 0.25rem;">Pregled i raspodela inženjerskih zadataka po projektima.</p>
             </div>
-            <a href="/zadaci/novi" class="btn btn-success">Dodaj novi zadatak</a>
+            <a href="/zadaci/novi" class="btn btn-success" sec:authorize="hasRole('ADMIN')">Dodaj novi zadatak</a>
         </div>
 
         <div class="table-card">
@@ -28,7 +28,7 @@
                             <th>Projekat</th>
                             <th>Inženjer</th>
                             <th>Završen</th>
-                            <th style="width: 200px; text-align: center;">Akcije</th>
+                            <th style="width: 200px; text-align: center;" sec:authorize="hasRole('ADMIN')">Akcije</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,7 +42,7 @@
                                       th:classappend="${zadatak.zavrsen} ? 'badge-success' : 'badge-warning'"
                                       th:text="${zadatak.zavrsen} ? 'Završen' : 'U radu'">U radu</span>
                             </td>
-                            <td style="text-align: center;">
+                            <td style="text-align: center;" sec:authorize="hasRole('ADMIN')">
                                 <div style="display: inline-flex; gap: 0.5rem;">
                                     <a th:href="@{/zadaci/izmeni/{id}(id=${zadatak.id})}" class="btn btn-warning btn-sm">Izmeni</a>
                                     <a th:href="@{/zadaci/obrisi/{id}(id=${zadatak.id})}" 
@@ -52,7 +52,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(zadaci)}">
-                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            <td th:colspan="${#authorization.expression('hasRole(''ADMIN'')') ? 6 : 5}" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
                                 Trenutno nema registrovanih zadataka.
                             </td>
                         </tr>
