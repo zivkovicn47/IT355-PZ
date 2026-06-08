@@ -1,6 +1,14 @@
 package com.metropolitan.it355pz.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Projekat {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String naziv;
     private String klijent;
@@ -16,7 +24,6 @@ public class Projekat {
         this.status = status;
     }
 
-    
     public Long getId() {
         return id;
     }

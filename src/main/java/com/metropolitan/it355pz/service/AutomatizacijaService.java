@@ -1,7 +1,7 @@
 package com.metropolitan.it355pz.service;
 
 import com.metropolitan.it355pz.model.*;
-import com.metropolitan.it355pz.repository.InMemoryRepository;
+import com.metropolitan.it355pz.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,114 +9,106 @@ import java.util.List;
 @Service
 public class AutomatizacijaService {
 
-    private final InMemoryRepository repository;
+    private final ProjekatRepository projekatRepository;
+    private final KomponentaRepository komponentaRepository;
+    private final InzenjerRepository inzenjerRepository;
+    private final LicencaRepository licencaRepository;
+    private final ZadatakRepository zadatakRepository;
 
-    public AutomatizacijaService(InMemoryRepository repository) {
-        this.repository = repository;
+    public AutomatizacijaService(ProjekatRepository projekatRepository,
+                                 KomponentaRepository komponentaRepository,
+                                 InzenjerRepository inzenjerRepository,
+                                 LicencaRepository licencaRepository,
+                                 ZadatakRepository zadatakRepository) {
+        this.projekatRepository = projekatRepository;
+        this.komponentaRepository = komponentaRepository;
+        this.inzenjerRepository = inzenjerRepository;
+        this.licencaRepository = licencaRepository;
+        this.zadatakRepository = zadatakRepository;
     }
 
     // --- Projekat CRUD ---
     public List<Projekat> getSveProjekte() {
-        return repository.getProjekti();
+        return projekatRepository.findAll();
     }
 
     public Projekat getProjekatById(Long id) {
-        return repository.getProjekatById(id);
+        return projekatRepository.findById(id).orElse(null);
     }
 
     public void sacuvajProjekat(Projekat p) {
-        if (p.getId() == null) {
-            repository.dodajProjekat(p);
-        } else {
-            repository.azurirajProjekat(p);
-        }
+        projekatRepository.save(p);
     }
 
     public void obrisiProjekat(Long id) {
-        repository.obrisiProjekat(id);
+        projekatRepository.deleteById(id);
     }
 
     // --- Komponenta CRUD ---
     public List<Komponenta> getSveKomponente() {
-        return repository.getKomponente();
+        return komponentaRepository.findAll();
     }
 
     public Komponenta getKomponentaById(Long id) {
-        return repository.getKomponentaById(id);
+        return komponentaRepository.findById(id).orElse(null);
     }
 
     public void sacuvajKomponentu(Komponenta k) {
-        if (k.getId() == null) {
-            repository.dodajKomponentu(k);
-        } else {
-            repository.azurirajKomponentu(k);
-        }
+        komponentaRepository.save(k);
     }
 
     public void obrisiKomponentu(Long id) {
-        repository.obrisiKomponentu(id);
+        komponentaRepository.deleteById(id);
     }
 
     // --- Inzenjer CRUD ---
     public List<Inzenjer> getSveInzenjere() {
-        return repository.getInzenjeri();
+        return inzenjerRepository.findAll();
     }
 
     public Inzenjer getInzenjerById(Long id) {
-        return repository.getInzenjerById(id);
+        return inzenjerRepository.findById(id).orElse(null);
     }
 
     public void sacuvajInzenjer(Inzenjer i) {
-        if (i.getId() == null) {
-            repository.dodajInzenjer(i);
-        } else {
-            repository.azurirajInzenjer(i);
-        }
+        inzenjerRepository.save(i);
     }
 
     public void obrisiInzenjer(Long id) {
-        repository.obrisiInzenjer(id);
+        inzenjerRepository.deleteById(id);
     }
 
     // --- Licenca CRUD ---
     public List<Licenca> getSveLicence() {
-        return repository.getLicence();
+        return licencaRepository.findAll();
     }
 
     public Licenca getLicencaById(Long id) {
-        return repository.getLicencaById(id);
+        return licencaRepository.findById(id).orElse(null);
     }
 
     public void sacuvajLicencu(Licenca l) {
-        if (l.getId() == null) {
-            repository.dodajLicencu(l);
-        } else {
-            repository.azurirajLicencu(l);
-        }
+        licencaRepository.save(l);
     }
 
     public void obrisiLicencu(Long id) {
-        repository.obrisiLicencu(id);
+        licencaRepository.deleteById(id);
     }
 
     // --- Zadatak CRUD ---
     public List<Zadatak> getSveZadatke() {
-        return repository.getZadaci();
+        return zadatakRepository.findAll();
     }
 
     public Zadatak getZadatakById(Long id) {
-        return repository.getZadatakById(id);
+        return zadatakRepository.findById(id).orElse(null);
     }
 
     public void sacuvajZadatak(Zadatak z) {
-        if (z.getId() == null) {
-            repository.dodajZadatak(z);
-        } else {
-            repository.azurirajZadatak(z);
-        }
+        zadatakRepository.save(z);
     }
 
     public void obrisiZadatak(Long id) {
-        repository.obrisiZadatak(id);
+        zadatakRepository.deleteById(id);
     }
 }
