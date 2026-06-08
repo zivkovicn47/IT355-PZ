@@ -1,50 +1,79 @@
-# Sistem za upravljanje inženjerskim projektima i automatizacijom (Automatikom Management System)
+# Automatikom Management System (Full-Stack)
 
-Ovaj projekat predstavlja prvu i drugu fazu (PZ01 & PZ02) projektnog zadatka iz predmeta **IT355 - Veb sistemi 2** na Metropolitan univerzitetu. Aplikacija služi za evidenciju i upravljanje resursima u inženjerskim projektima industrijske automatizacije.
+Ovaj projekat predstavlja kompletnu realizaciju projektnog zadatka iz predmeta **IT355 - Veb sistemi 2** na Metropolitan univerzitetu (PZ02 faza). Aplikacija služi za evidenciju i upravljanje resursima u inženjerskim projektima industrijske automatizacije.
+
+Sistem je u potpunosti refaktorisan u **Full-Stack** arhitekturu koja se sastoji od nezavisnog **Spring Boot REST API backenda** i **React klijentskog frontenda**.
+
+---
 
 ## Opis Sistema
-**Automatikom Management System** je veb aplikacija koja olakšava organizaciju inženjerskih projekata. Omogućava:
-- Evidenciju hardverskih komponenti (PLC-ovi, HMI paneli, frekventni regulatori).
-- Praćenje softverskih licenci (TIA Portal, WinCC Runtime, WinCC OA).
-- Upravljanje inženjerskim timom (PLC programeri, SCADA inženjeri, projektanti).
-- Dodelu i praćenje konkretnih zadataka po projektima i inženjerima.
+**Automatikom Management System** olakšava organizaciju industrijskih inženjerskih projekata kroz:
+- Evidenciju hardverskih i softverskih komponenti (PLC-ovi, HMI paneli, mrežna oprema).
+- Praćenje softverskih licenci (TIA Portal, WinCC OA, Studio 5000) i njihove valjanosti.
+- Upravljanje inženjerskim timom (PLC programeri, SCADA/HMI inženjeri).
+- Raspodelu i praćenje konkretnih zadataka po projektima i inženjerima.
 
-## Arhitektura (PZ01 & PZ02)
-Aplikacija je implementirana u **Spring Boot 4.0.6 (Java 21)** frejmworku prateći čist **MVC (Model-View-Controller)** arhitekturni šablon:
-- **Model sloj (JPA Entiteti)**: Predstavlja podatke u sistemu. Klase su mapirane kao relacioni entiteti baze podataka pomoću Jakarta Persistence (JPA) anotacija.
-- **Repository sloj (Spring Data JPA)**: Upravljanje podacima se obavlja preko JpaRepository interfejsa koji komuniciraju sa **H2 in-memory relacionom bazom podataka**. Šema baze se automatski kreira i ažurira na osnovu JPA modela.
-- **Service sloj (AutomatizacijaService)**: Sloj poslovne logike koji povezuje repozitorijume sa kontrolerima.
-- **Controller sloj (Spring MVC Kontroleri)**: Prihvata zahteve i prosleđuje ih odgovarajućim Thymeleaf šablonima.
-- **View sloj (Thymeleaf & CSS)**: Dinamički HTML šabloni stilizovani modernom tamnom "clean-tech" dashboard temom (čist CSS). U drugoj fazi, šabloni su dodatno obogaćeni Thymeleaf Security dijalektom radi uloge-baziranog skrivanja opcija.
+---
 
-## Sigurnost i Kontrola Pristupa (Spring Security)
-Sistem koristi **Spring Security** za kontrolu pristupa i zaštitu resursa. Autentifikacija je zasnovana na dva in-memory korisnika sa heširanim lozinkama (BCrypt):
-- **Admin** (Kredencijali: `admin` / `admin`)
-  - Poseduje ulogu `ADMIN`.
-  - Ima puna prava nad sistemom (pregled, dodavanje, izmena i brisanje svih entiteta).
-- **User** (Kredencijali: `user` / `user`)
-  - Poseduje ulogu `USER`.
-  - Ima isključivo "read-only" pristup kontrolnoj tabli i listama entiteta. Svi akcioni dugmići za dodavanje, izmenu i brisanje su skriveni na interfejsu (pomoću Thymeleaf Security dijalekta), a direktan pristup URL adresama za modifikaciju je zaštićen i vraća HTTP 403 Forbidden.
+## Arhitektura Aplikacije
 
-## Struktura klasa
-Sistem je modelovan kroz sledećih 5 model klasa (JPA Entiteti):
+### 1. Backend (Spring Boot REST API)
+Backend je smešten u korenskom direktorijumu i organizovan je kroz višeslojnu arhitekturu:
+- **Model sloj (JPA Entiteti)**: Podaci mapirani kao relacioni entiteti u **H2 in-memory bazi podataka** pomoću Jakarta Persistence (JPA) anotacija.
+- **Repository sloj (Spring Data JPA)**: Perzistencija preko `JpaRepository` interfejsa.
+- **Service sloj (`AutomatizacijaService`)**: Poslovna logika aplikacije zaštićena sa `@Transactional` transakcijama za bezbednost upisa i brisanja.
+- **Controller sloj (REST API)**: Kontroleri anotirani sa `@RestController` koji primaju i vraćaju JSON podatke.
+
+### 2. Sigurnost i Kontrola Pristupa (Spring Security & JWT)
+Aplikacija koristi **stateless** sigurnosni režim na bazi JSON Web Tokena (JWT):
+- **Autentifikacija**: Rute za registraciju i prijavu su pod `/api/auth`. Ruta `POST /api/auth/login` proverava kredencijale (lozinke heširane pomoću `BCryptPasswordEncoder`) i vraća JWT token sa ulogom korisnika u payload claims (`roles`).
+- **Autorizacija na osnovu uloga (RBAC)**:
+  - **Admin** (`admin` / `admin`) - poseduje ulogu `ROLE_ADMIN` i ima puna CRUD prava nad svim entitetima (GET, POST, DELETE).
+  - **User** (`user` / `user`) - poseduje ulogu `ROLE_USER` i ima isključivo čitalački (Read-Only) pristup sistemu.
+
+### 3. Testiranje
+- **Jedinični testovi (Unit Tests)**: Napisani za servisni sloj pomoću JUnit 5 i Mockito alata (`AutomatizacijaServiceTest.java`).
+- **Integracioni testovi (Integration Tests)**: Napisani za REST kontrolere pomoću Spring Boot Test i `MockMvc` alata (`ProjekatControllerTest.java`), uz simulaciju mock korisnika (`.with(user().roles())`) za bezbednu proveru API-ja.
+
+### 4. Frontend (React & Vite)
+Klijentski deo aplikacije se nalazi u [frontend/](file:///c:/Users/nikol/OneDrive/Dokumenti/_Fakultet/6. Semestar/IT355 - Veb sistemi 2/IT355-PZ/IT355-PZ-01/it355pz/frontend) folderu:
+- **Rutiranje**: Implementirano preko `react-router-dom` uz upotrebu `ProtectedLayout` i `ProtectedRoute` kontrola za zaštitu privatnih stranica.
+- **Axios klijent**: Konfigurisan u `api.js` sa automatskim presretanjem zahteva (Request Interceptor) koji dodaje `Authorization: Bearer <token>` u heder svakog API poziva.
+- **Mobilna responzivnost**: Napisan je responzivni CSS sa klizećom fiokom (Drawer), "hamburger" menijem na dodir i horizontalno skrolujućim tabelama (`overflow-x: auto`) za udoban rad na telefonima.
+
+---
+
+## Model Klasa (5 Entiteta)
+Sistem sadrži 5 ugrađenih relacionih tabela:
 1. **Projekat**: `id`, `naziv`, `klijent`, `status`
 2. **Komponenta**: `id`, `naziv`, `serijskiBroj`, `proizvodjac`, `status`
 3. **Inzenjer**: `id`, `ime`, `prezime`, `email`, `uloga`
 4. **Licenca**: `id`, `nazivSoftvera`, `kljucLicence`, `tipLicence`, `aktivna`
 5. **Zadatak**: `id`, `opis`, `projekatId`, `inzenjerId`, `zavrsen`
 
-## Uputstvo za pokretanje
-Da biste pokrenuli aplikaciju lokalno, pratite sledeće korake:
+---
 
-1. Klonirajte repozitorijum.
-2. Otvorite korenski direktorijum projekta.
-3. Pokrenite server komandom:
+## Uputstvo za Pokretanje
+
+### Korak 1: Pokretanje Backenda (Port: 8080)
+1. Otvorite korenski direktorijum projekta u terminalu.
+2. Pokrenite aplikaciju komandom:
    ```bash
-   ./mvnw spring-boot:run
+   .\mvnw spring-boot:run
    ```
-4. Aplikaciju možete otvoriti u pretraživaču na adresi:
-   [http://localhost:8080](http://localhost:8080)
-5. Nakon pokretanja aplikacije, sistem će zahtevati prijavu. Prijavite se koristeći kredencijale za **Admin** ili **User** naloge navedene iznad.
-6. H2 konzoli za pregled baze podataka u realnom vremenu možete pristupiti na adresi:
-   [http://localhost:8080/h2-console](http://localhost:8080/h2-console) (Kredencijali za pristup: JDBC URL: `jdbc:h2:mem:automatikomdb`, Username: `sa`, Password: `password`).
+3. H2 konzoli možete pristupiti na: [http://localhost:8080/h2-console](http://localhost:8080/h2-console) (JDBC URL: `jdbc:h2:mem:automatikomdb`, Username: `sa`, Password: `password`).
+
+### Korak 2: Pokretanje React Frontenda (Port: 5173)
+1. Otvorite novi terminal i uđite u `frontend` folder:
+   ```bash
+   cd frontend
+   ```
+2. Instalirajte zavisnosti (ako već niste):
+   ```bash
+   npm install
+   ```
+3. Pokrenite razvojni server:
+   ```bash
+   npm run dev
+   ```
+4. Aplikacija će biti dostupna na linku: [http://localhost:5173/](http://localhost:5173/)
