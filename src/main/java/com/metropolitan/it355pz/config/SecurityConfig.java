@@ -39,7 +39,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/css/**", "/js/**").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
                 // Ograničavanje akcija izmena/dodavanja/brisanja samo na ADMIN ulogu
                 .requestMatchers(
                     "/projekti/novi", "/projekti/sacuvaj", "/projekti/izmeni/**", "/projekti/obrisi/**",
