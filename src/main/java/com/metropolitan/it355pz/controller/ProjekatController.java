@@ -2,12 +2,13 @@ package com.metropolitan.it355pz.controller;
 
 import com.metropolitan.it355pz.model.Projekat;
 import com.metropolitan.it355pz.service.AutomatizacijaService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/projekti")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/projekti")
 public class ProjekatController {
 
     private final AutomatizacijaService service;
@@ -17,36 +18,28 @@ public class ProjekatController {
     }
 
     @GetMapping("")
-    public String listaProjekata(Model model) {
-        model.addAttribute("projekti", service.getSveProjekte());
-        return "projekti/lista";
+    public ResponseEntity<List<Projekat>> listaProjekata() {
+        return ResponseEntity.ok(service.getSveProjekte());
     }
 
-    @GetMapping("/novi")
-    public String novaForma(Model model) {
-        model.addAttribute("projekat", new Projekat());
-        return "projekti/forma";
+    @GetMapping("/{id}")
+    public ResponseEntity<Projekat> getById(@PathVariable("id") Long id) {
+        Projekat p = service.getProjekatById(id);
+        if (p == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(p);
     }
 
     @PostMapping("/sacuvaj")
-    public String sacuvaj(@ModelAttribute("projekat") Projekat projekat) {
+    public ResponseEntity<Void> sacuvaj(@RequestBody Projekat projekat) {
         service.sacuvajProjekat(projekat);
-        return "redirect:/projekti";
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/izmeni/{id}")
-    public String izmeniForma(@PathVariable("id") Long id, Model model) {
-        Projekat p = service.getProjekatById(id);
-        if (p == null) {
-            return "redirect:/projekti";
-        }
-        model.addAttribute("projekat", p);
-        return "projekti/forma";
-    }
-
-    @GetMapping("/obrisi/{id}")
-    public String obrisi(@PathVariable("id") Long id) {
+    @DeleteMapping("/obrisi/{id}")
+    public ResponseEntity<Void> obrisi(@PathVariable("id") Long id) {
         service.obrisiProjekat(id);
-        return "redirect:/projekti";
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,12 +2,13 @@ package com.metropolitan.it355pz.controller;
 
 import com.metropolitan.it355pz.model.Zadatak;
 import com.metropolitan.it355pz.service.AutomatizacijaService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/zadaci")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/zadaci")
 public class ZadatakController {
 
     private final AutomatizacijaService service;
@@ -17,41 +18,28 @@ public class ZadatakController {
     }
 
     @GetMapping("")
-    public String listaZadataka(Model model) {
-        model.addAttribute("zadaci", service.getSveZadatke());
-        model.addAttribute("service", service); // Prosleđen servis za pretragu naziva projekta i inženjera u tabeli
-        return "zadaci/lista";
+    public ResponseEntity<List<Zadatak>> listaZadataka() {
+        return ResponseEntity.ok(service.getSveZadatke());
     }
 
-    @GetMapping("/novi")
-    public String novaForma(Model model) {
-        model.addAttribute("zadatak", new Zadatak());
-        model.addAttribute("projekti", service.getSveProjekte());
-        model.addAttribute("inzenjeri", service.getSveInzenjere());
-        return "zadaci/forma";
+    @GetMapping("/{id}")
+    public ResponseEntity<Zadatak> getById(@PathVariable("id") Long id) {
+        Zadatak z = service.getZadatakById(id);
+        if (z == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(z);
     }
 
     @PostMapping("/sacuvaj")
-    public String sacuvaj(@ModelAttribute("zadatak") Zadatak zadatak) {
+    public ResponseEntity<Void> sacuvaj(@RequestBody Zadatak zadatak) {
         service.sacuvajZadatak(zadatak);
-        return "redirect:/zadaci";
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/izmeni/{id}")
-    public String izmeniForma(@PathVariable("id") Long id, Model model) {
-        Zadatak z = service.getZadatakById(id);
-        if (z == null) {
-            return "redirect:/zadaci";
-        }
-        model.addAttribute("zadatak", z);
-        model.addAttribute("projekti", service.getSveProjekte());
-        model.addAttribute("inzenjeri", service.getSveInzenjere());
-        return "zadaci/forma";
-    }
-
-    @GetMapping("/obrisi/{id}")
-    public String obrisi(@PathVariable("id") Long id) {
+    @DeleteMapping("/obrisi/{id}")
+    public ResponseEntity<Void> obrisi(@PathVariable("id") Long id) {
         service.obrisiZadatak(id);
-        return "redirect:/zadaci";
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,12 +2,13 @@ package com.metropolitan.it355pz.controller;
 
 import com.metropolitan.it355pz.model.Komponenta;
 import com.metropolitan.it355pz.service.AutomatizacijaService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/komponente")
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/komponente")
 public class KomponentaController {
 
     private final AutomatizacijaService service;
@@ -17,36 +18,28 @@ public class KomponentaController {
     }
 
     @GetMapping("")
-    public String listaKomponenti(Model model) {
-        model.addAttribute("komponente", service.getSveKomponente());
-        return "komponente/lista";
+    public ResponseEntity<List<Komponenta>> listaKomponenti() {
+        return ResponseEntity.ok(service.getSveKomponente());
     }
 
-    @GetMapping("/novi")
-    public String novaForma(Model model) {
-        model.addAttribute("komponenta", new Komponenta());
-        return "komponente/forma";
+    @GetMapping("/{id}")
+    public ResponseEntity<Komponenta> getById(@PathVariable("id") Long id) {
+        Komponenta k = service.getKomponentaById(id);
+        if (k == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(k);
     }
 
     @PostMapping("/sacuvaj")
-    public String sacuvaj(@ModelAttribute("komponenta") Komponenta komponenta) {
+    public ResponseEntity<Void> sacuvaj(@RequestBody Komponenta komponenta) {
         service.sacuvajKomponentu(komponenta);
-        return "redirect:/komponente";
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/izmeni/{id}")
-    public String izmeniForma(@PathVariable("id") Long id, Model model) {
-        Komponenta k = service.getKomponentaById(id);
-        if (k == null) {
-            return "redirect:/komponente";
-        }
-        model.addAttribute("komponenta", k);
-        return "komponente/forma";
-    }
-
-    @GetMapping("/obrisi/{id}")
-    public String obrisi(@PathVariable("id") Long id) {
+    @DeleteMapping("/obrisi/{id}")
+    public ResponseEntity<Void> obrisi(@PathVariable("id") Long id) {
         service.obrisiKomponentu(id);
-        return "redirect:/komponente";
+        return ResponseEntity.ok().build();
     }
 }

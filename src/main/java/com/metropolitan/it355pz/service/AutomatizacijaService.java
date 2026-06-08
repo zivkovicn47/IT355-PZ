@@ -3,6 +3,7 @@ package com.metropolitan.it355pz.service;
 import com.metropolitan.it355pz.model.*;
 import com.metropolitan.it355pz.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -36,10 +37,12 @@ public class AutomatizacijaService {
         return projekatRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void sacuvajProjekat(Projekat p) {
         projekatRepository.save(p);
     }
 
+    @Transactional
     public void obrisiProjekat(Long id) {
         projekatRepository.deleteById(id);
     }
@@ -53,10 +56,12 @@ public class AutomatizacijaService {
         return komponentaRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void sacuvajKomponentu(Komponenta k) {
         komponentaRepository.save(k);
     }
 
+    @Transactional
     public void obrisiKomponentu(Long id) {
         komponentaRepository.deleteById(id);
     }
@@ -70,10 +75,12 @@ public class AutomatizacijaService {
         return inzenjerRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void sacuvajInzenjer(Inzenjer i) {
         inzenjerRepository.save(i);
     }
 
+    @Transactional
     public void obrisiInzenjer(Long id) {
         inzenjerRepository.deleteById(id);
     }
@@ -87,10 +94,12 @@ public class AutomatizacijaService {
         return licencaRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void sacuvajLicencu(Licenca l) {
         licencaRepository.save(l);
     }
 
+    @Transactional
     public void obrisiLicencu(Long id) {
         licencaRepository.deleteById(id);
     }
@@ -104,10 +113,12 @@ public class AutomatizacijaService {
         return zadatakRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void sacuvajZadatak(Zadatak z) {
         zadatakRepository.save(z);
     }
 
+    @Transactional
     public void obrisiZadatak(Long id) {
         zadatakRepository.deleteById(id);
     }

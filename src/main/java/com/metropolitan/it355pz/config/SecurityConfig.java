@@ -1,20 +1,35 @@
 package com.metropolitan.it355pz.config;
 
+import com.metropolitan.it355pz.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,32 +50,49 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/favicon.ico", "/error").permitAll()
                 // Ograničavanje akcija izmena/dodavanja/brisanja samo na ADMIN ulogu
                 .requestMatchers(
-                    "/projekti/novi", "/projekti/sacuvaj", "/projekti/izmeni/**", "/projekti/obrisi/**",
-                    "/komponente/novi", "/komponente/sacuvaj", "/komponente/izmeni/**", "/komponente/obrisi/**",
-                    "/inzenjeri/novi", "/inzenjeri/sacuvaj", "/inzenjeri/izmeni/**", "/inzenjeri/obrisi/**",
-                    "/licence/novi", "/licence/sacuvaj", "/licence/izmeni/**", "/licence/obrisi/**",
-                    "/zadaci/novi", "/zadaci/sacuvaj", "/zadaci/izmeni/**", "/zadaci/obrisi/**"
+                    "/api/projekti/sacuvaj", "/api/projekti/obrisi/**",
+                    "/api/komponente/sacuvaj", "/api/komponente/obrisi/**",
+                    "/api/inzenjeri/sacuvaj", "/api/inzenjeri/obrisi/**",
+                    "/api/licence/sacuvaj", "/api/licence/obrisi/**",
+                    "/api/zadaci/sacuvaj", "/api/zadaci/obrisi/**"
                 ).hasRole("ADMIN")
-                // Dozvola za pregled listi i kontrolne table za uloge USER i ADMIN
-                .requestMatchers("/", "/projekti", "/komponente", "/inzenjeri", "/licence", "/zadaci").hasAnyRole("USER", "ADMIN")
+                // Dozvola za pregled listi i pojedinačnih resursa za uloge USER i ADMIN
+                .requestMatchers(
+                    "/api/projekti/**", "/api/komponente/**", "/api/inzenjeri/**", "/api/licence/**", "/api/zadaci/**"
+                ).hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form.permitAll())
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(java.util.List.of("*"));
+        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(java.util.List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
