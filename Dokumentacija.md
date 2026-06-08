@@ -12,8 +12,9 @@
 <br><br><br><br><br>
 
 **Student:** Nikola Živković  
-**Indeks:** 5312  
-**Profesor:** Dr. Dragan Đokić  
+**Indeks:** 6090  
+**Profesor:**  Jovana Jović
+**Asistent:**  Vladan Ristić
 
 **Datum:** Jun, 2026.  
 
