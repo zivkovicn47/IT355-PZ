@@ -5,7 +5,15 @@
         </svg>
         <span>Automatikom</span>
     </a>
-    <ul class="nav-links">
+    
+    <!-- Mobile Hamburger Toggle Button -->
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+    </button>
+    
+    <ul class="nav-links" id="navLinks">
         <li><a href="/" class="nav-link" th:classappend="${activeTab == 'home'} ? 'active'">Početna</a></li>
         <li><a href="/projekti" class="nav-link" th:classappend="${activeTab == 'projekti'} ? 'active'">Projekti</a></li>
         <li><a href="/komponente" class="nav-link" th:classappend="${activeTab == 'komponente'} ? 'active'">Komponente</a></li>
@@ -13,4 +21,14 @@
         <li><a href="/licence" class="nav-link" th:classappend="${activeTab == 'licence'} ? 'active'">Licence</a></li>
         <li><a href="/zadaci" class="nav-link" th:classappend="${activeTab == 'zadaci'} ? 'active'">Zadaci</a></li>
     </ul>
+
+    <!-- Menu Toggle JavaScript -->
+    <script>
+        document.getElementById('navToggle').addEventListener('click', function() {
+            const navLinks = document.getElementById('navLinks');
+            const toggle = document.getElementById('navToggle');
+            navLinks.classList.toggle('open');
+            toggle.classList.toggle('active');
+        });
+    </script>
 </nav>

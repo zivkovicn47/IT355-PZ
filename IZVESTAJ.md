@@ -64,14 +64,25 @@ Za potrebe korisničkog interfejsa kreirani su sledeći resursi:
   - `lista.html` - Prikaz tabele podataka sa CRUD linkovima (kod zadataka su prikazana tekstualna imena projekata i inženjera umesto sirovih ID-jeva).
   - `forma.html` - Forme za unos i ažuriranje (kod zadataka su implementirani padajući meniji za izbor projekta i dodeljenog inženjera).
 
+### Responzivnost i Mobilna Verzija
+Aplikacija je u potpunosti prilagođena za sve veličine ekrana (mobilni telefoni, tableti, desktop):
+1. **Hamburger Meni (Navbar)**:
+   - Integrisano je funkcionalno hamburger dugme sa animacijom tri vodoravne linije koje se pri kliku transformišu u znak "X".
+   - Korišćen je nativni JavaScript unutar `navbar.html` za preklapanje (toggle) vidljivosti navigacionih linkova na mobilnim uređajima, bez ometanja funkcionalnosti selekcije teksta na stranici.
+2. **Prilagođavanje Rasporeda (Media Queries)**:
+   - Na širinama ekrana manjim od **768px** (tableti i veći telefoni), navigacioni linkovi se sklapanjem pretvaraju u padajući meni koji se pozicionira preko z-indexa.
+   - Prikaz tabela se prilagođava mobilnim ekranima kroz smanjenje margina i unutrašnjih razmaka (`padding`), dok se akciona dugmad u zaglavlju slažu vertikalno.
+   - Na širinama ekrana manjim od **576px** (mobilni telefoni), dashboard kartice na početnoj strani se raspoređuju u jednu kolonu, a akciona dugmad unutar formi se slažu vertikalno i zauzimaju punu širinu ekrana za lakše korišćenje na dodir.
+
 ## 7. Verifikacija
 - Projekat je uspešno pokrenut u terminalu komandom:
-  `./mvnw spring-boot:run`
+   `./mvnw spring-boot:run`
 - Izvršeno je testiranje HTTP odziva preko lokalnih mrežnih zahteva:
-  - Putanja `http://localhost:8080/` -> **StatusCode: 200 OK**
+  - Putanja `http://localhost:8080/` -> **StatusCode: 200 OK** (Potvrđeno učitavanje responzivne navigacije i stilova)
   - Putanja `http://localhost:8080/projekti` -> **StatusCode: 200 OK**
   - Putanja `http://localhost:8080/komponente` -> **StatusCode: 200 OK**
   - Putanja `http://localhost:8080/inzenjeri` -> **StatusCode: 200 OK**
   - Putanja `http://localhost:8080/licence` -> **StatusCode: 200 OK**
   - Putanja `http://localhost:8080/zadaci` -> **StatusCode: 200 OK**
-- Sve Thymeleaf stranice se renderuju bez grešaka, a stilovi se ispravno primenjuju.
+- Sve Thymeleaf stranice se ispravno renderuju, responzivne su na promenu širine prozora i funkcionišu na mobilnim uređajima.
+

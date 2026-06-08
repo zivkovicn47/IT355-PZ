@@ -365,3 +365,112 @@ select.form-control {
 input, textarea, select, [contenteditable="true"] {
     caret-color: auto;
 }
+
+/* Mobilna navigacija i responzivni stilovi */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 101;
+}
+
+.hamburger-bar {
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-primary);
+    transition: transform var(--transition-speed), opacity var(--transition-speed);
+}
+
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem 2rem;
+        gap: 1.25rem;
+        z-index: 99;
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-toggle.active .hamburger-bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .nav-toggle.active .hamburger-bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .nav-toggle.active .hamburger-bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .container {
+        margin: 1.5rem auto;
+        padding: 0 1rem;
+    }
+
+    .welcome-card {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .welcome-card h1 {
+        font-size: 2rem;
+    }
+
+    .welcome-card p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-card {
+        padding: 1.5rem;
+    }
+
+    .table-header-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .table-header-container .btn {
+        width: 100%;
+    }
+
+    th, td {
+        padding: 0.75rem 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        margin: 0;
+    }
+}
