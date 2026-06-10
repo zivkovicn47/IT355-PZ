@@ -27,7 +27,7 @@ public class WeatherService {
         Map<String, Object> result = new HashMap<>();
         result.put("city", city);
 
-        if ("TVOJ_API_KLJUC_OVDE".equals(apiKey) || apiKey == null || apiKey.trim().isEmpty()) {
+        if (apiKey == null || apiKey.trim().isEmpty() || apiKey.startsWith("TVOJ_")) {
             result.put("temp", null);
             result.put("description", "Missing or invalid API Key");
             result.put("error", true);
