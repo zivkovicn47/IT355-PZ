@@ -72,9 +72,10 @@ public class SecurityConfig {
                     "/api/licence/sacuvaj", "/api/licence/obrisi/**",
                     "/api/zadaci/sacuvaj", "/api/zadaci/obrisi/**"
                 ).hasRole("ADMIN")
-                // Dozvola za pregled listi i pojedinačnih resursa za uloge USER i ADMIN
+                // Dozvola za pregled listi, pojedinačnih resursa i vremenske prognoze za uloge USER i ADMIN
                 .requestMatchers(
-                    "/api/projekti/**", "/api/komponente/**", "/api/inzenjeri/**", "/api/licence/**", "/api/zadaci/**"
+                    "/api/projekti/**", "/api/komponente/**", "/api/inzenjeri/**", "/api/licence/**", "/api/zadaci/**",
+                    "/api/weather/**"
                 ).hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             )
@@ -89,6 +90,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(java.util.List.of("*"));
         configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(java.util.List.of("*"));
+        configuration.setExposedHeaders(java.util.List.of("Content-Disposition"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

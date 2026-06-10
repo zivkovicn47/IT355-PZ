@@ -46,6 +46,7 @@ Aplikacija je izgrađena korišćenjem modernih tehnologija i najboljih praksi u
 - **H2 Baza Podataka**: Brza, *in-memory* relaciono baza podataka korišćena za lokalni razvoj i testiranje.
 - **React 18 & Vite**: Brzo i optimizovano frontend okruženje zasnovano na komponentama.
 - **Spring Security & JSON Web Token (JWT)**: Za kontrolu pristupa, stateless sesije i bezbednu autorizaciju korisnika na osnovu uloga.
+- **Apache POI (v5.2.5)**: Biblioteka za dinamičko generisanje i stilizovanje Excel (.xlsx) izveštaja na backendu.
 - **JUnit 5 i Mockito**: Za jedinično testiranje servisnog sloja.
 - **MockMvc**: Za integraciono testiranje REST API kontrolera.
 
@@ -143,6 +144,18 @@ Backend deo aplikacije prati klasičnu troslojnu arhitekturu preporučenu za Ent
    - Interfejsi koji nasleđuju `JpaRepository` (npr. `ProjekatRepository`, `ZadatakRepository`).
    - Obezbeđuju standardne CRUD metode bez potrebe za pisanjem SQL upita.
 
+### 4.2. Napredne Funkcionalnosti (Excel Export i Weather API)
+Kako bi aplikacija ponudila više od standardnog CRUD interfejsa, implementirane su dve napredne serverske usluge:
+1. **Izvoz podataka u Excel (`ExcelExportService`)**:
+   - Koristi se Apache POI biblioteka za dinamičko prevođenje liste objekata `Projekat` u binarni `.xlsx` dokument.
+   - Ćelije zaglavlja su stilizovane sa bold belim tekstom na tamnoplavoj pozadini, dodate su ivice oko svih ćelija za bolju čitljivost, i primenjeno je automatsko skaliranje širine kolona prema dužini sadržaja (`sheet.autoSizeColumn`).
+   - Kontroler `ProjekatController` izlaže rutu `GET /api/projekti/export/excel` i vraća niz bajtova sa zaglavljima `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` i `Content-Disposition: attachment; filename=projekti.xlsx`, što obezbeđuje preuzimanje fajla na klijentskoj strani.
+2. **Integracija spoljnog Vremenskog API-ja (`WeatherService`)**:
+   - Servis se povezuje sa eksternim servisom **OpenWeatherMap** (API rute su parametrizovane u `application.properties`).
+   - Slanje HTTP GET zahteva obavlja se preko Spring klase `RestTemplate`. Parametar `units=metric` se koristi kako bi se temperatura dobila u Celzijusima.
+   - Implementirano je sigurno rukovanje izuzecima (try-catch): ukoliko je API ključ nepostojeći (placeholder `TVOJ_API_KLJUC_OVDE`), grad nije pronađen ili nema mreže, servis to detektuje i vraća fallback JSON sa opisom greške, sprečavajući pad aplikacije.
+   - Kontroler `WeatherController` izlaže endpoint `GET /api/weather?city={grad}` koji React frontend periodično poziva.
+
 ---
 
 ## 5. Implementacija Bezbednosti (Spring Security i JWT)
@@ -208,7 +221,11 @@ Integracioni testovi su kreirani u klasi `ProjekatControllerTest` za verifikacij
 
 ### 7.1. Rezime Projekta
 Tokom izrade projekta IT355 PZ02, uspešno je razvijen kompletan Full-Stack sistem za upravljanje inženjerskim resursima pod nazivom **Automatikom Management System**.
-Aplikacija demonstrira slojevitu arhitekturu backenda sa Spring Boot-om, sigurnost na bazi JWT tokena bez čuvanja sesija na serveru, i moderan React frontend sa ulogama zasnovanim korisničkim interfejsom i responzivnim mobilnim drawer-om. 
+Aplikacija demonstrira slojevitu arhitekturu backenda sa Spring Boot-om, sigurnost na bazi JWT tokena bez čuvanja sesija na serveru, i moderan React frontend sa ulogama zasnovanim korisničkim interfejsom i responzivnim mobilnim drawer-om.
+
+Pored standardnih CRUD operacija, u sistem su uspešno implementirane napredne integracije: izvoz projekata u Excel datoteke pomoću Apache POI biblioteke i asinhroni prikaz vremenske prognoze za Niš (terensku lokaciju) u realnom vremenu pomoću OpenWeather API-ja.
+
+Tokom integracije, rešeni su izazovi poput bezbednog konfigurisanja CORS politika u Spring Security kako bi se pretraživačima eksplicitno izložilo zaglavlje `Content-Disposition` (za nesmetano preuzimanje datoteka preko klijentskog Axiosa) i implementacije robusnog try-catch mehanizma u servisnom sloju koji sprečava prekide u radu i vraća fallback podatke ukoliko API ključ za vreme nije konfigurisan.
 
 Rad sistema je potvrđen kroz prolazak svih napisanih jediničnih i integracionih testova.
 

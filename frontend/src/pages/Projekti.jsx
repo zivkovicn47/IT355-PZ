@@ -7,6 +7,8 @@ const Projekti = () => {
   const [projekti, setProjekti] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [weather, setWeather] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
   
   // Modal states
   const [showModal, setShowModal] = useState(false);
@@ -49,8 +51,40 @@ const Projekti = () => {
     }
   };
 
+  const fetchWeather = async () => {
+    setWeatherLoading(true);
+    try {
+      const response = await api.get('/weather?city=Nis');
+      setWeather(response.data);
+    } catch (err) {
+      console.error('Greška pri preuzimanju vremenskih podataka:', err);
+    } finally {
+      setWeatherLoading(false);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const response = await api.get('/projekti/export/excel', {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'projekti.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Greška pri preuzimanju Excel izveštaja:', err);
+      alert('Neuspešno preuzimanje Excel izveštaja.');
+    }
+  };
+
   useEffect(() => {
     fetchProjekti();
+    fetchWeather();
   }, [navigate]);
 
   // Open modal for Create
@@ -110,7 +144,10 @@ const Projekti = () => {
             Pregled i upravljanje automatizovanim inženjerskim projektima.
           </p>
         </div>
-        <div className="header-actions">
+        <div className="header-actions" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button onClick={handleExportExcel} className="export-btn">
+            Preuzmi Excel izveštaj
+          </button>
           {isAdmin && (
             <button onClick={handleOpenCreate} className="create-btn">
               Dodaj novi projekat
@@ -120,6 +157,29 @@ const Projekti = () => {
       </header>
 
       {error && <div className="error-message">{error}</div>}
+
+      {/* Weather Widget */}
+      <div className="weather-widget">
+        {weatherLoading ? (
+          <div className="weather-loading">Učitavanje vremenskih uslova za Niš...</div>
+        ) : weather && !weather.error && weather.temp !== undefined && weather.temp !== null ? (
+          <div className="weather-info">
+            <span className="weather-icon">☀️</span>
+            <span className="weather-text">
+              Uslovi na terenu (<strong>{weather.city || 'Niš'}</strong>):{' '}
+              <span className="weather-temp">{Math.round(weather.temp)}°C</span>
+              <span className="weather-desc"> - {weather.description}</span>
+            </span>
+          </div>
+        ) : (
+          <div className="weather-info error">
+            <span className="weather-icon">⚠️</span>
+            <span className="weather-text">
+              Vremenski podaci nedostupni {weather && weather.description && `(${weather.description})`}
+            </span>
+          </div>
+        )}
+      </div>
 
       <div className="table-card">
         {loading ? (
